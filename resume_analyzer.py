@@ -4,12 +4,12 @@ from docx import Document
 from google import genai
 
 # Page Config (Sirf ek baar, sabse upar)
-st.set_page_config(page_title="AI Resume Analyzer", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="AI Resume Checker", page_icon="⚔️", layout="wide")
 
 # API Key Secrets se uthana (Yahi best tareeqa hai)
 GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 
-st.title("🤖 Resume Checker")
+st.title("⚔️Resume Checker")
 st.markdown("Upload your resume and get an instant professional analysis!")
 
 # Main Interface
