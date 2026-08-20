@@ -68,7 +68,7 @@ if st.button("🚀 Analyze Resume", type="primary"):
                     """
                     
                     response = client.models.generate_content(
-                        model='gemini-2.0-flash', # Note: gemini-3.6-flash abhi available nahi hai, 2.0-flash use karein
+                        model='gemini-3.6-flash', # Note: gemini-3.6-flash abhi available nahi hai, 2.0-flash use karein
                         contents=prompt
                     )
                     
