@@ -5,77 +5,121 @@ from google import genai
 
 # Page Config
 st.set_page_config(
-    page_title="AI Resume Analyzer Pro", 
-    page_icon="🎯", 
+    page_title="AI Resume Pro - ATS Optimizer", 
+    page_icon="⚡", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for gorgeous look & graphics
+# Advanced Neon & Gradient Custom CSS for Ultra-Modern Look
 st.markdown("""
 <style>
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #4F46E5;
-        text-align: center;
-        margin-bottom: 0px;
+    /* Main Background Accent */
+    .stApp {
+        background: radial-gradient(circle at top left, #0f172a, #1e1b4b, #090d16);
+        color: #f8fafc;
     }
-    .sub-header {
+    
+    /* Hero Banner */
+    .hero-banner {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
+        color: white;
         text-align: center;
-        color: #6B7280;
-        font-size: 1.1rem;
-        margin-bottom: 30px;
+        box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        margin-bottom: 2rem;
     }
+    .hero-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+        font-weight: 400;
+        opacity: 0.9;
+    }
+
+    /* Custom Glowing Buttons */
     .stButton>button {
         width: 100%;
-        border-radius: 8px;
-        font-weight: 600;
-        background: linear-gradient(90deg, #4F46E5 0%, #3B82F6 100%);
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
         color: white;
         border: none;
-        padding: 0.6rem 1rem;
+        padding: 0.8rem 1.5rem;
+        box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+        transition: all 0.3s ease;
     }
     .stButton>button:hover {
-        background: linear-gradient(90deg, #4338CA 0%, #2563EB 100%);
+        background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+        box-shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
+        transform: translateY(-2px);
         color: white;
+    }
+
+    /* Card Box Styling */
+    .custom-card {
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        margin-bottom: 1rem;
+    }
+    
+    /* Sidebar custom look */
+    [data-testid="stSidebar"] {
+        background-color: #0f172a;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar for instructions / guide
+# Sidebar with Rich Graphics & Badges
 with st.sidebar:
-    st.image("https://img.icons8.com/color/96/resume.png", width=80)
-    st.markdown("### 📌 Quick Guide:")
-    st.markdown("1. **Upload Resume** (PDF or Word format).")
-    st.markdown("2. *(Optional)* Paste target job description.")
-    st.markdown("3. Click **Analyze Resume Now**.")
+    st.markdown("### 🔥 AI Career Suite")
     st.markdown("---")
-    st.markdown("💡 **Pro Tip:** Job description dalne se AI aur zyada accurate ATS score nikal kar deta hai!")
+    st.markdown("✨ **Features:**")
+    st.markdown("🎯 **Instant ATS Score**")
+    st.markdown("💡 **Smart Keyword Match**")
+    st.markdown("🚀 **Deep Weakness Analysis**")
+    st.markdown("---")
+    st.info("💡 **Pro Tip:** Paste the target job description to match your skills with 99% accuracy!")
 
-# Main Title Header
-st.markdown('<p class="main-header">🎯 AI Resume Analyzer & ATS Optimizer</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Supercharge your resume with advanced AI intelligence and get hired faster!</p>', unsafe_allow_html=True)
+# Hero Banner Header
+st.markdown("""
+<div class="hero-banner">
+    <div class="hero-title">⚡ AI Resume Analyzer Pro</div>
+    <div class="hero-subtitle">Transform your resume into an interview magnet using Next-Gen AI intelligence! 🚀</div>
+</div>
+""", unsafe_allow_html=True)
 
 # API Key check from Streamlit Secrets
 GEMINI_API_KEY = st.secrets.get("GEMINI_API_KEY", "")
 
-# Main Interface with structured columns
-with st.container():
-    col1, col2 = st.columns(2, gap="large")
+# Input Layout using containers
+col1, col2 = st.columns(2, gap="large")
 
-    with col1:
-        st.markdown("#### 📄 Step 1: Upload Document")
-        uploaded_file = st.file_uploader("Choose a PDF or DOCX file", type=["pdf", "docx"])
+with col1:
+    st.markdown("### 📂 Step 1: Upload File")
+    with st.container():
+        uploaded_file = st.file_uploader("Upload PDF or Word Document", type=["pdf", "docx"])
         if uploaded_file:
-            st.success(f"File uploaded: **{uploaded_file.name}**")
+            st.success(f"✅ Loaded: **{uploaded_file.name}**")
 
-    with col2:
-        st.markdown("#### 💼 Step 2: Target Job Description")
+with col2:
+    st.markdown("### 🎯 Step 2: Job Match (Optional)")
+    with st.container():
         job_description = st.text_area(
-            "Paste job description (Optional)", 
-            placeholder="Paste target job requirements here to check compatibility...",
-            height=130
+            "Paste Job Description", 
+            placeholder="Paste target job requirements here to find missing keywords...",
+            height=125
         )
 
 st.markdown("<br>", unsafe_allow_html=True)
@@ -92,39 +136,39 @@ def extract_text_from_docx(file):
     doc = Document(file)
     return "\n".join([para.text for para in doc.paragraphs])
 
-# Centered Fancy Analyze Button
-col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-with col_btn2:
-    analyze_btn = st.button("🚀 Analyze Resume Now", type="primary")
+# Centered Glowing Action Button
+b_col1, b_col2, b_col3 = st.columns([1, 2, 1])
+with b_col2:
+    analyze_btn = st.button("✨ Run Deep AI Analysis ✨", type="primary")
 
 # Execution logic on Button Click
 if analyze_btn:
     if not GEMINI_API_KEY:
         st.error("API Key missing! Please configure your Streamlit Secrets.")
     elif uploaded_file is None:
-        st.warning("⚠️ Please upload a resume file first before clicking analyze.")
+        st.warning("⚠️ Please upload a resume file first before analyzing!")
     else:
-        with st.spinner("🔄 Reading text and running deep AI analysis... Please wait."):
+        with st.spinner("🔮 AI is scanning your resume, calculating ATS score & detecting gaps..."):
             if uploaded_file.name.endswith(".pdf"):
                 resume_text = extract_text_from_pdf(uploaded_file)
             else:
                 resume_text = extract_text_from_docx(uploaded_file)
 
             if not resume_text.strip():
-                st.error("Could not read text from the uploaded resume. Please check the file.")
+                st.error("Could not read text from the uploaded file. Please try another file.")
             else:
                 try:
                     client = genai.Client(api_key=GEMINI_API_KEY)
                     
                     prompt = f"""
-                    You are an expert ATS and Senior Career Coach. Analyze the given resume and provide a detailed report strictly in English:
+                    You are an elite ATS and Senior Career Coach. Analyze the given resume and provide a detailed report strictly in English:
                     
                     Resume Text: {resume_text}
                     Job Description: {job_description if job_description else "N/A"}
                     
-                    Please structure your response cleanly with markdown:
-                    1. ATS Score (0-100)
-                    2. Key Strengths
+                    Please structure your response with striking formatting:
+                    1. ATS Score (0-100 with clear indicator)
+                    2. Core Strengths (Bullet points with emojis)
                     3. Weaknesses/Areas for Improvement
                     4. Missing Keywords
                     5. Actionable Career Recommendations
@@ -138,8 +182,8 @@ if analyze_btn:
                     st.markdown("---")
                     st.markdown("### 📊 Comprehensive Analysis Report")
                     
-                    # Display report inside a clean styled container
-                    with st.container(border=True):
+                    # Display report inside a high-end styled glowing container
+                    with st.container():
                         st.markdown(response.text)
                     
                 except Exception as e:
