@@ -174,8 +174,9 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
+                    # Model updated to gemini-1.5-flash to prevent quota limits
                     response = client.models.generate_content(
-                        model='gemini-3.6-flash',
+                        model='gemini-1.5-flash',
                         contents=prompt
                     )
                     
