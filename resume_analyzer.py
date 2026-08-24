@@ -174,9 +174,9 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
-                    # Updated to gemini-2.5-flash for stable production support
+                    # Back to gemini-3.6-flash as requested by the system
                     response = client.models.generate_content(
-                        model='gemini-2.5-flash',
+                        model='gemini-3.6-flash',
                         contents=prompt
                     )
                     
