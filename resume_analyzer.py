@@ -157,13 +157,13 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
-                    # Using gemini-3.5-flash with built-in safety retry logic
+                    # Using the latest stable gemini-3.8-flash model endpoint with auto-retry
                     response = None
                     max_retries = 3
                     for attempt in range(max_retries):
                         try:
                             response = client.models.generate_content(
-                                model='gemini-3.5-flash',
+                                model='gemini-3.8-flash',
                                 contents=prompt
                             )
                             break
