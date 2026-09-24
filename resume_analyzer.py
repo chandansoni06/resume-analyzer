@@ -157,19 +157,19 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
-                    # Auto-Retry mechanism for 503 errors
+                    # Using gemini-1.5-flash with robust retry logic for stable performance
                     response = None
                     max_retries = 3
                     for attempt in range(max_retries):
                         try:
                             response = client.models.generate_content(
-                                model='gemini-3.6-flash',
+                                model='gemini-1.5-flash',
                                 contents=prompt
                             )
                             break
                         except Exception as inner_e:
-                            if "503" in str(inner_e) and attempt < max_retries - 1:
-                                time.sleep(3) # Wait 3 seconds before retrying
+                            if ("503" in str(inner_e) or "429" in str(inner_e)) and attempt < max_retries - 1:
+                                time.sleep(4)
                                 continue
                             else:
                                 raise inner_e
