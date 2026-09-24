@@ -2,6 +2,7 @@ import streamlit as st
 import pdfplumber
 from docx import Document
 from google import genai
+import time
 
 # Page Config
 st.set_page_config(
@@ -14,13 +15,10 @@ st.set_page_config(
 # Advanced Neon & Gradient Custom CSS for Ultra-Modern Look
 st.markdown("""
 <style>
-    /* Main Background Accent */
     .stApp {
         background: radial-gradient(circle at top left, #0f172a, #1e1b4b, #090d16);
         color: #f8fafc;
     }
-    
-    /* Hero Banner */
     .hero-banner {
         background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
         padding: 2.5rem;
@@ -41,8 +39,6 @@ st.markdown("""
         font-weight: 400;
         opacity: 0.9;
     }
-
-    /* Custom Glowing Buttons */
     .stButton>button {
         width: 100%;
         border-radius: 12px;
@@ -61,19 +57,6 @@ st.markdown("""
         transform: translateY(-2px);
         color: white;
     }
-
-    /* Card Box Styling */
-    .custom-card {
-        background: rgba(30, 41, 59, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 1.5rem;
-        border-radius: 16px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        margin-bottom: 1rem;
-    }
-    
-    /* Sidebar custom look */
     [data-testid="stSidebar"] {
         background-color: #0f172a;
         border-right: 1px solid rgba(255, 255, 255, 0.05);
@@ -174,18 +157,28 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
-                    # Back to gemini-3.6-flash as requested by the system
-                    response = client.models.generate_content(
-                        model='gemini-3.6-flash',
-                        contents=prompt
-                    )
-                    
-                    st.markdown("---")
-                    st.markdown("### 📊 Comprehensive Analysis Report")
-                    
-                    # Display report inside a high-end styled glowing container
-                    with st.container():
-                        st.markdown(response.text)
+                    # Auto-Retry mechanism for 503 errors
+                    response = None
+                    max_retries = 3
+                    for attempt in range(max_retries):
+                        try:
+                            response = client.models.generate_content(
+                                model='gemini-3.6-flash',
+                                contents=prompt
+                            )
+                            break
+                        except Exception as inner_e:
+                            if "503" in str(inner_e) and attempt < max_retries - 1:
+                                time.sleep(3) # Wait 3 seconds before retrying
+                                continue
+                            else:
+                                raise inner_e
+
+                    if response:
+                        st.markdown("---")
+                        st.markdown("### 📊 Comprehensive Analysis Report")
+                        with st.container():
+                            st.markdown(response.text)
                     
                 except Exception as e:
                     st.error(f"An error occurred: {e}")
