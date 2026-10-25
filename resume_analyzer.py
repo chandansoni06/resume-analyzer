@@ -157,29 +157,21 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
-                    # Multi-Model Fallback Strategy for handling 503 / high demand errors
-                    models_to_try = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash']
+                    # Single model call with basic retry for transient spikes
                     response = None
-                    
-                    for model_name in models_to_try:
+                    for attempt in range(3):
                         try:
-                            for attempt in range(2):
-                                try:
-                                    response = client.models.generate_content(
-                                        model=model_name,
-                                        contents=prompt
-                                    )
-                                    break
-                                except Exception as inner_e:
-                                    if "503" in str(inner_e) or "429" in str(inner_e) or "UNAVAILABLE" in str(inner_e):
-                                        time.sleep(2)
-                                        continue
-                                    else:
-                                        raise inner_e
-                            if response:
-                                break
-                        except Exception:
-                            continue
+                            response = client.models.generate_content(
+                                model='gemini-3.8-flash',
+                                contents=prompt
+                            )
+                            break
+                        except Exception as inner_e:
+                            if "503" in str(inner_e) or "UNAVAILABLE" in str(inner_e):
+                                time.sleep(3)
+                                continue
+                            else:
+                                raise inner_e
 
                     if response:
                         st.markdown("---")
@@ -187,7 +179,8 @@ if analyze_btn:
                         with st.container():
                             st.markdown(response.text)
                     else:
-                        st.error("⚠️ All Gemini servers are currently experiencing heavy traffic or high demand (503 Error). Please wait 1-2 minutes and try again.")
+                        st.error("⚠️ Server is currently busy (503 Error). Please wait a moment and click the analyze button again.")
                     
                 except Exception as e:
                     st.error(f"An error occurred: {e}")
+
