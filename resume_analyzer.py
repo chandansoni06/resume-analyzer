@@ -157,24 +157,23 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
-                    ]
-                    # Using the standard model name for the new google-genai SDK
-                response = None
-                max_retries = 3
-                for attempt in range(max_retries):
-                    try:
-                        response = client.models.generate_content(
-                            model='gemini-2.5-flash',  # ✅ Correct model for google-genai SDK
-                            contents=prompt
-                        )
-                        break
-                    except Exception as inner_e:
-                        if ("503" in str(inner_e) or "429" in str(inner_e)) and attempt < max_retries - 1:
-                            time.sleep(3)
-                            continue
-                        else:
-                            raise inner_e
-                            
+                    # Using the correct stable model endpoint with auto-retry
+                    response = None
+                    max_retries = 3
+                    for attempt in range(max_retries):
+                        try:
+                            response = client.models.generate_content(
+                                model='gemini-2.5-flash',
+                                contents=prompt
+                            )
+                            break
+                        except Exception as inner_e:
+                            if ("503" in str(inner_e) or "429" in str(inner_e)) and attempt < max_retries - 1:
+                                time.sleep(3)
+                                continue
+                            else:
+                                raise inner_e
+
                     if response:
                         st.markdown("---")
                         st.markdown("### 📊 Comprehensive Analysis Report")
