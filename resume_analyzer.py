@@ -141,7 +141,9 @@ if analyze_btn:
                 st.error("Could not read text from the uploaded file. Please try another file.")
             else:
                 try:
-                    client = genai.Client(api_key=GEMINI_API_KEY)
+                    # Configure classic google-generativeai library
+                    genai.configure(api_key=GEMINI_API_KEY)
+                    model = genai.GenerativeModel('gemini-1.5-flash')
                     
                     prompt = f"""
                     You are an elite ATS and Senior Career Coach. Analyze the given resume and provide a detailed report strictly in English:
@@ -157,30 +159,15 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
-                    # Single model call with basic retry for transient spikes
-                    response = None
-                    for attempt in range(3):
-                        try:
-                            response = client.models.generate_content(
-                                model='gemini-3.8-flash',
-                                contents=prompt
-                            )
-                            break
-                        except Exception as inner_e:
-                            if "503" in str(inner_e) or "UNAVAILABLE" in str(inner_e):
-                                time.sleep(3)
-                                continue
-                            else:
-                                raise inner_e
+                    response = model.generate_content(prompt)
 
-                    if response:
+                    if response and response.text:
                         st.markdown("---")
                         st.markdown("### 📊 Comprehensive Analysis Report")
                         with st.container():
                             st.markdown(response.text)
                     else:
-                        st.error("⚠️ Server is currently busy (503 Error). Please wait a moment and click the analyze button again.")
+                        st.error("⚠️ Empty response received from the model. Please try again.")
                     
                 except Exception as e:
                     st.error(f"An error occurred: {e}")
-
