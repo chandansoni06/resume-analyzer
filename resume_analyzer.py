@@ -157,28 +157,37 @@ if analyze_btn:
                     5. Actionable Career Recommendations
                     """
                     
-                    # Using the correct stable model endpoint with auto-retry
+                    # Multi-Model Fallback Strategy for handling 503 / high demand errors
+                    models_to_try = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash']
                     response = None
-                    max_retries = 3
-                    for attempt in range(max_retries):
+                    
+                    for model_name in models_to_try:
                         try:
-                            response = client.models.generate_content(
-                                model='gemini-3.8-flash',
-                                contents=prompt
-                            )
-                            break
-                        except Exception as inner_e:
-                            if ("503" in str(inner_e) or "429" in str(inner_e)) and attempt < max_retries - 1:
-                                time.sleep(3)
-                                continue
-                            else:
-                                raise inner_e
+                            for attempt in range(2):
+                                try:
+                                    response = client.models.generate_content(
+                                        model=model_name,
+                                        contents=prompt
+                                    )
+                                    break
+                                except Exception as inner_e:
+                                    if "503" in str(inner_e) or "429" in str(inner_e) or "UNAVAILABLE" in str(inner_e):
+                                        time.sleep(2)
+                                        continue
+                                    else:
+                                        raise inner_e
+                            if response:
+                                break
+                        except Exception:
+                            continue
 
                     if response:
                         st.markdown("---")
                         st.markdown("### 📊 Comprehensive Analysis Report")
                         with st.container():
                             st.markdown(response.text)
+                    else:
+                        st.error("⚠️ All Gemini servers are currently experiencing heavy traffic or high demand (503 Error). Please wait 1-2 minutes and try again.")
                     
                 except Exception as e:
                     st.error(f"An error occurred: {e}")
