@@ -1,7 +1,7 @@
 import streamlit as st
 import pdfplumber
 from docx import Document
-from google import genai
+import google.generativeai as genai
 import time
 
 # Page Config
